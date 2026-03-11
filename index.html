@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heather's API Lab</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #22d3ee;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --border: #475569;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #1e1b4b 50%, var(--bg) 100%);
+    padding: 3rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+  
+  /* Nav */
+  .nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav a:hover, .nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  /* Container */
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  
+  /* Section */
+  .section { display: none; }
+  .section.active { display: block; }
+  .section h2 { font-size: 1.6rem; margin-bottom: 1rem; color: var(--primary-light); }
+  .section h3 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+  
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--primary-light); }
+  .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .card-icon { font-size: 2rem; }
+  .card-title { font-size: 1.1rem; font-weight: 600; }
+  .card-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+  .card p { color: var(--text-muted); margin-bottom: 0.75rem; }
+  
+  /* Lesson cards */
+  .lesson-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lesson-card:hover { border-color: var(--primary-light); transform: translateX(4px); }
+  .lesson-num { display: inline-block; background: var(--primary); color: white; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-size: 0.85rem; font-weight: 700; margin-right: 1rem; }
+  .lesson-title { font-weight: 600; font-size: 1.05rem; }
+  .lesson-desc { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  .lesson-meta { display: flex; gap: 1rem; margin-top: 0.75rem; }
+  .lesson-tag { background: var(--surface2); color: var(--text-muted); padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.75rem; }
+  .lesson-tag.postman { color: var(--warning); border: 1px solid var(--warning); background: transparent; }
+  .lesson-tag.ps { color: var(--accent); border: 1px solid var(--accent); background: transparent; }
+  .lesson-tag.api { color: var(--success); border: 1px solid var(--success); background: transparent; }
+  
+  /* Lesson content */
+  .lesson-content {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  .lesson-content.open { display: block; }
+  .lesson-content h3 { color: var(--accent); margin: 1.5rem 0 0.75rem; }
+  .lesson-content h3:first-child { margin-top: 0; }
+  .lesson-content p { color: var(--text-muted); margin-bottom: 1rem; }
+  .lesson-content ul, .lesson-content ol { color: var(--text-muted); margin: 0.5rem 0 1rem 1.5rem; }
+  .lesson-content li { margin-bottom: 0.5rem; }
+  .lesson-content strong { color: var(--text); }
+  
+  /* Code blocks */
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+  }
+  code { font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; color: var(--accent); }
+  pre code { color: #e6edf3; }
+  .code-comment { color: #8b949e; }
+  
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-outline:hover { background: var(--accent); color: var(--bg); }
+  .btn-download { background: var(--success); color: var(--bg); }
+  .btn-download:hover { opacity: 0.9; }
+  
+  /* Meet Duder */
+  .duder-intro {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .duder-avatar { font-size: 3rem; flex-shrink: 0; }
+  .duder-text { flex: 1; }
+  .duder-text .name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem; }
+  .duder-text .role { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .duder-text p { color: var(--text-muted); font-size: 0.95rem; }
+  
+  /* Progress */
+  .progress-bar {
+    background: var(--surface2);
+    border-radius: 20px;
+    height: 8px;
+    margin: 1rem 0 2rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+  }
+  
+  /* Ask form */
+  .ask-form { max-width: 600px; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.4rem; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+  }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+  .form-note { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem; }
+  
+  /* Downloads */
+  .download-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .download-info { display: flex; align-items: center; gap: 1rem; }
+  .download-icon { font-size: 1.5rem; }
+  .download-name { font-weight: 600; font-size: 0.95rem; }
+  .download-desc { color: var(--text-muted); font-size: 0.8rem; }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6rem; }
+    .container { padding: 1rem; }
+    .duder-intro { flex-direction: column; text-align: center; }
+    .nav a { padding: 0.75rem 1rem; font-size: 0.8rem; }
+  }
+  
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--success);
+    color: var(--bg);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Welcome, <span>Heather</span> 👋</h1>
+  <p>Your personal guide to pulling data like a pro. No coding experience required — we'll get there together, one step at a time.</p>
+</div>
+
+<div class="nav">
+  <a href="#" class="active" onclick="showSection('home',this)">🏠 Home</a>
+  <a href="#" onclick="showSection('lessons',this)">📚 Lessons</a>
+  <a href="#" onclick="showSection('downloads',this)">📦 Downloads</a>
+  <a href="#" onclick="showSection('reference',this)">📋 Quick Reference</a>
+  <a href="#" onclick="showSection('ask',this)">💬 Ask a Question</a>
+</div>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div id="home" class="section active">
+    <h2>What is this?</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+      Chuck built this for you. You know those reports you pull — the ones where the UI doesn't give you enough data, or you're combining two exports and massaging them in Excel? There's a better way. The same system has an <strong>API</strong> — a direct line to the data. No UI limitations, no manual exports. Just ask for exactly what you need and get it.
+    </p>
+    <p style="color:var(--text-muted);margin-bottom:2rem;">
+      This site walks you through it at your own pace. Start with clicking buttons in Postman (zero code), then graduate to scripts that automate everything. By the end, you'll be pulling any report you want with a single command.
+    </p>
+
+    <div class="duder-intro">
+      <div class="duder-avatar">🎳</div>
+      <div class="duder-text">
+        <div class="name">Meet Duder</div>
+        <div class="role">AI Assistant</div>
+        <p>Hey Heather! I'm Duder — I help Chuck with API work, PowerShell scripts, data transforms, and all sorts of automation. When Chuck gets stuck on something or needs to build a new report quickly, I'm the one he bounces ideas off of and builds things with.</p>
+        <p style="margin-top:0.5rem;">Now I'm here to help you too. If you get stuck on any lesson, have a question about an endpoint, or just need something explained differently — hit the <strong>Ask a Question</strong> tab. I'll get back to you. No question is too basic. 🤙</p>
+      </div>
+    </div>
+
+    <h3>The Game Plan</h3>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎯</div>
+        <div>
+          <div class="card-title">Phase 1 — See the Data (Postman)</div>
+          <div class="card-subtitle">No code required</div>
+        </div>
+      </div>
+      <p>Install Postman, import the collection Chuck built for you, and start pulling reports by clicking a button. You'll see real data from your system flowing back instantly. This is the "aha" moment.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div>
+          <div class="card-title">Phase 2 — Automate It (PowerShell)</div>
+          <div class="card-subtitle">Simple scripts, big results</div>
+        </div>
+      </div>
+      <p>Take what you learned in Postman and turn it into scripts you can double-click. Pull a report, save it as CSV, open it in Excel — all in one shot. If you've written VBA macros, this will feel familiar.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🚀</div>
+        <div>
+          <div class="card-title">Phase 3 — Build Your Own</div>
+          <div class="card-subtitle">Make it yours</div>
+        </div>
+      </div>
+      <p>Combine what you've learned to build custom reports, automate recurring pulls, and transform data your way. The Fidelity file? Automated. Monthly tax reports? One click. You'll be dangerous.</p>
+    </div>
+  </div>
+
+  <!-- LESSONS -->
+  <div id="lessons" class="section">
+    <h2>📚 Lessons</h2>
+    <p style="color:var(--text-muted);margin-bottom:0.5rem;">Go in order — each one builds on the last.</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+    <!-- Lesson 1 -->
+    <div class="lesson-card" onclick="toggleLesson(1)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln1">1</span>
+        <div>
+          <div class="lesson-title">What's an API? (And Why Should You Care?)</div>
+          <div class="lesson-desc">The concept in plain English — no jargon, no BS.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">5 min read</span>
+            <span class="lesson-tag api">Concepts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson1">
+      <h3>Think of it like a drive-through window</h3>
+      <p>You know how the reporting UI works — you log in, click through menus, pick a date range, hit export, wait, get a spreadsheet. That's like walking into a restaurant, sitting down, ordering from a menu, and waiting for your food.</p>
+      <p>An <strong>API</strong> is the drive-through window. You pull up, say exactly what you want, and get it handed to you. Same kitchen, same food, but faster and you never have to get out of your car.</p>
+      
+      <h3>Why does this matter for you?</h3>
+      <ul>
+        <li><strong>No UI limitations</strong> — the reporting module only shows you certain fields. The API gives you everything.</li>
+        <li><strong>Combine data</strong> — remember combining two admin reports into one? The API can pull both and merge them automatically.</li>
+        <li><strong>Automate it</strong> — that report you pull every month? Imagine double-clicking a file and having it appear on your desktop, ready to go.</li>
+        <li><strong>Exact data, every time</strong> — no clicking the wrong filter, no "oops, wrong date range." The script remembers.</li>
+      </ul>
+
+      <h3>How it works (30 seconds)</h3>
+      <p>Every API interaction has the same pattern:</p>
+      <ol>
+        <li><strong>Authenticate</strong> — "Hi, I'm Heather, here are my credentials." (You do this once.)</li>
+        <li><strong>Request</strong> — "Give me the GL detail report for February 2026."</li>
+        <li><strong>Response</strong> — The system hands you the data. CSV, JSON, whatever you asked for.</li>
+      </ol>
+      <p>That's it. Everything else is just details about <em>how</em> to ask. Which is what the next lessons cover.</p>
+      
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(1);toggleLesson(1);">✅ Got it — Next!</button>
+      </div>
+    </div>
+
+    <!-- Lesson 2 -->
+    <div class="lesson-card" onclick="toggleLesson(2)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln2">2</span>
+        <div>
+          <div class="lesson-title">Installing Postman — Your New Best Friend</div>
+          <div class="lesson-desc">Download, install, and take your first look around.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">10 min</span>
+            <span class="lesson-tag postman">Postman</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson2">
+      <h3>What is Postman?</h3>
+      <p>Postman is a free app that lets you talk to APIs by filling in forms and clicking buttons. No code. Think of it as a testing tool — you'll use it to build and test your requests before we turn them into scripts later.</p>
+      
+      <h3>Install it</h3>
+      <ol>
+        <li>Go to <a href="https://www.postman.com/downloads/" target="_blank" style="color:var(--accent)">postman.com/downloads</a></li>
+        <li>Download the desktop app (not the web version)</li>
+        <li>Install it — next, next, finish</li>
+        <li>Create a free account when prompted (use your work email)</li>
+      </ol>
+
+      <h3>Quick tour</h3>
+      <p>When you open Postman, you'll see:</p>
+      <ul>
+        <li><strong>Collections</strong> (left sidebar) — groups of saved requests. This is where your imported collection will live.</li>
+        <li><strong>Request tab</strong> (center) — where you build/edit a request. Has a URL bar, method dropdown (GET/POST), and tabs for headers, body, params.</li>
+        <li><strong>Response panel</strong> (bottom) — where the data comes back after you click Send.</li>
+      </ul>
+      <p>Don't worry about memorizing everything. In the next lesson, you'll import a pre-built collection and just start clicking.</p>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(2);toggleLesson(2);">✅ Installed — Next!</button>
+      </div>
+    </div>
+
+    <!-- Lesson 3 -->
+    <div class="lesson-card" onclick="toggleLesson(3)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln3">3</span>
+        <div>
+          <div class="lesson-title">Your First API Call — Pulling Real Data</div>
+          <div class="lesson-desc">Import the collection, authenticate, and pull your first report.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">15 min</span>
+            <span class="lesson-tag postman">Postman</span>
+            <span class="lesson-tag api">Hands-on</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson3">
+      <h3>Import the collection</h3>
+      <ol>
+        <li>Go to the <strong>Downloads</strong> tab on this site</li>
+        <li>Download <strong>"Heather's UKG Ready Collection"</strong></li>
+        <li>In Postman: click <strong>Import</strong> (top left) → drag the file in</li>
+        <li>You'll see a new collection appear in the sidebar with pre-built requests</li>
+      </ol>
+
+      <h3>Set your credentials</h3>
+      <p>The collection uses <strong>variables</strong> so you don't have to type credentials every time:</p>
+      <ol>
+        <li>Click the collection name in the sidebar</li>
+        <li>Go to the <strong>Variables</strong> tab</li>
+        <li>Fill in your values (Chuck will provide these):
+          <ul>
+            <li><code>base_url</code> — the API server address</li>
+            <li><code>company_id</code> — your company's ID</li>
+            <li><code>client_id</code> — your API client ID</li>
+            <li><code>client_secret</code> — your API client secret</li>
+          </ul>
+        </li>
+        <li>Click <strong>Save</strong></li>
+      </ol>
+
+      <h3>Get your token</h3>
+      <p>Before you can pull data, you need to authenticate (remember the drive-through analogy? This is pulling up to the window).</p>
+      <ol>
+        <li>Open the <strong>"🔑 Get Auth Token"</strong> request in the collection</li>
+        <li>Click <strong>Send</strong></li>
+        <li>You should see a response with an <code>access_token</code></li>
+        <li>The collection automatically saves this token for all other requests — you don't have to copy/paste it</li>
+      </ol>
+
+      <h3>Pull your first report</h3>
+      <ol>
+        <li>Open <strong>"📊 Get Saved Report (CSV)"</strong></li>
+        <li>Click <strong>Send</strong></li>
+        <li>Look at the response — that's your data, pulled straight from the API!</li>
+        <li>Click <strong>Save Response → Save as File</strong> to download it as CSV</li>
+      </ol>
+      <p>🎉 <strong>You just made your first API call.</strong> Everything from here builds on this exact pattern: authenticate → request → get data.</p>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(3);toggleLesson(3);">✅ I pulled data! Next!</button>
+      </div>
+    </div>
+
+    <!-- Lesson 4 -->
+    <div class="lesson-card" onclick="toggleLesson(4)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln4">4</span>
+        <div>
+          <div class="lesson-title">Exploring Endpoints — What Else Can I Pull?</div>
+          <div class="lesson-desc">Saved reports, employee data, GL details — what's available.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">10 min</span>
+            <span class="lesson-tag postman">Postman</span>
+            <span class="lesson-tag api">API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson4">
+      <h3>Endpoints = different windows at the drive-through</h3>
+      <p>Each endpoint gives you different data. The collection includes the most useful ones for tax and GL work:</p>
+      
+      <h3>Saved Reports</h3>
+      <p>These are the reports already built in the UI. The API can run them and return results as CSV:</p>
+      <pre><code>GET /ta/rest/v1/report/saved/{report_id}</code></pre>
+      <p>You'll find the report ID in the URL when you open a saved report in the browser. The collection has your most-used ones pre-loaded.</p>
+
+      <h3>Employee Data</h3>
+      <pre><code>GET /ta/rest/v2/companies/{company_id}/employees</code></pre>
+      <p>Full employee records — names, IDs, departments, hire dates, everything. Way more fields than the UI export.</p>
+
+      <h3>What about filters?</h3>
+      <p>Most endpoints accept <strong>query parameters</strong> to narrow results:</p>
+      <ul>
+        <li>Date ranges: <code>?start_date=2026-01-01&end_date=2026-01-31</code></li>
+        <li>Specific employees: <code>?employee_id=12345</code></li>
+        <li>Pagination: <code>?page=1&per_page=100</code></li>
+      </ul>
+      <p>In Postman, these go in the <strong>Params</strong> tab — just fill in the key and value. The collection has examples.</p>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(4);toggleLesson(4);">✅ Makes sense — Next!</button>
+      </div>
+    </div>
+
+    <!-- Lesson 5 -->
+    <div class="lesson-card" onclick="toggleLesson(5)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln5">5</span>
+        <div>
+          <div class="lesson-title">PowerShell 101 — Your First Script</div>
+          <div class="lesson-desc">From VBA to PowerShell — same thinking, new syntax.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">15 min</span>
+            <span class="lesson-tag ps">PowerShell</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson5">
+      <h3>Why PowerShell?</h3>
+      <p>You already think like a scripter — VBA taught you that. PowerShell is the same idea but built for talking to APIs and manipulating data outside of Excel. And it's already on your machine.</p>
+
+      <h3>VBA → PowerShell translation</h3>
+      <p>Concepts you already know:</p>
+      <ul>
+        <li><strong>Variables:</strong> VBA: <code>Dim x As String</code> → PS: <code>$x = "hello"</code></li>
+        <li><strong>If/Then:</strong> VBA: <code>If x = 1 Then</code> → PS: <code>if ($x -eq 1) { }</code></li>
+        <li><strong>Loops:</strong> VBA: <code>For Each item In collection</code> → PS: <code>foreach ($item in $collection) { }</code></li>
+        <li><strong>Output:</strong> VBA: <code>Debug.Print</code> → PS: <code>Write-Host</code></li>
+      </ul>
+
+      <h3>Open PowerShell</h3>
+      <ol>
+        <li>Press <strong>Win + X</strong> → click <strong>Windows PowerShell</strong> (or Terminal)</li>
+        <li>Type <code>Write-Host "Hello Heather!"</code> and press Enter</li>
+        <li>Congrats, you just ran PowerShell 🎉</li>
+      </ol>
+
+      <h3>Your first API call in PowerShell</h3>
+      <p>This is the same thing you did in Postman, but in code:</p>
+      <pre><code><span class="code-comment"># Step 1: Authenticate (get a token)</span>
+$authBody = @{
+    grant_type    = "client_credentials"
+    client_id     = "YOUR_CLIENT_ID"
+    client_secret = "YOUR_CLIENT_SECRET"
+}
+
+$token = Invoke-RestMethod `
+    -Uri "https://secure2.saashr.com/ta/rest/v2/companies/YOUR_COMPANY_ID/oauth2/token" `
+    -Method POST `
+    -Body $authBody
+
+<span class="code-comment"># Step 2: Pull a saved report</span>
+$headers = @{ Authorization = "Bearer $($token.access_token)" }
+
+$report = Invoke-RestMethod `
+    -Uri "https://secure2.saashr.com/ta/rest/v1/report/saved/YOUR_REPORT_ID" `
+    -Headers $headers `
+    -Method GET
+
+<span class="code-comment"># Step 3: Save it</span>
+$report | Out-File "$env:USERPROFILE\Desktop\my-report.csv"
+
+Write-Host "Done! Check your desktop." -ForegroundColor Green</code></pre>
+      
+      <p>Save that as <code>Get-MyReport.ps1</code> on your desktop. Right-click → <strong>Run with PowerShell</strong>. CSV appears on your desktop. ✨</p>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(5);toggleLesson(5);">✅ Script works — Next!</button>
+      </div>
+    </div>
+
+    <!-- Lesson 6 -->
+    <div class="lesson-card" onclick="toggleLesson(6)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="ln6">6</span>
+        <div>
+          <div class="lesson-title">Making It Yours — Parameters & Customization</div>
+          <div class="lesson-desc">Change date ranges, pick different reports, filter results.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">10 min</span>
+            <span class="lesson-tag ps">PowerShell</span>
+            <span class="lesson-tag api">API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="lesson6">
+      <h3>Dynamic dates</h3>
+      <p>Instead of hardcoding dates, let PowerShell figure them out:</p>
+      <pre><code><span class="code-comment"># Last month's start and end</span>
+$lastMonth = (Get-Date).AddMonths(-1)
+$startDate = Get-Date $lastMonth -Day 1 -Format "yyyy-MM-dd"
+$endDate = Get-Date (Get-Date $lastMonth -Day 1).AddMonths(1).AddDays(-1) -Format "yyyy-MM-dd"
+
+Write-Host "Pulling data from $startDate to $endDate"</code></pre>
+
+      <h3>Reusable config</h3>
+      <p>Put your credentials in a separate file so your scripts stay clean:</p>
+      <pre><code><span class="code-comment"># config.ps1 — keep this private!</span>
+$Config = @{
+    BaseUrl      = "https://secure2.saashr.com"
+    CompanyId    = "YOUR_COMPANY_ID"
+    ClientId     = "YOUR_CLIENT_ID"
+    ClientSecret = "YOUR_CLIENT_SECRET"
+}
+
+<span class="code-comment"># In your report scripts, just dot-source it:</span>
+. .\config.ps1
+<span class="code-comment"># Now $Config.BaseUrl, $Config.ClientId etc. are available</span></code></pre>
+
+      <h3>Export to Excel-friendly CSV</h3>
+      <pre><code><span class="code-comment"># If the API returns JSON, convert to CSV properly</span>
+$data | ConvertTo-Csv -NoTypeInformation | Out-File "report.csv" -Encoding UTF8
+
+<span class="code-comment"># Or if it's already CSV text from a saved report:</span>
+$report | Out-File "report.csv" -Encoding UTF8
+
+<span class="code-comment"># Auto-open in Excel</span>
+Start-Process "report.csv"</code></pre>
+
+      <p>Now you can modify any script — different report IDs, different date ranges, different output files. You're not copying someone else's work anymore, you're building your own tools.</p>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completeLesson(6);toggleLesson(6);">✅ I'm customizing! 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div id="downloads" class="section">
+    <h2>📦 Downloads</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">Everything you need, ready to go.</p>
+
+    <div class="download-item">
+      <div class="download-info">
+        <div class="download-icon">📮</div>
+        <div>
+          <div class="download-name">Heather's UKG Ready Postman Collection</div>
+          <div class="download-desc">Pre-built API requests — auth, saved reports, employee data. Import into Postman and start clicking.</div>
+        </div>
+      </div>
+      <a href="downloads/heather-ukg-collection.json" class="btn btn-download">⬇ Download</a>
+    </div>
+
+    <div class="download-item">
+      <div class="download-info">
+        <div class="download-icon">⚡</div>
+        <div>
+          <div class="download-name">PowerShell Starter Scripts</div>
+          <div class="download-desc">Ready-to-run .ps1 scripts — config, auth helper, report puller, CSV export.</div>
+        </div>
+      </div>
+      <a href="downloads/ps-starter-scripts.zip" class="btn btn-download">⬇ Download</a>
+    </div>
+
+    <div class="download-item">
+      <div class="download-info">
+        <div class="download-icon">📋</div>
+        <div>
+          <div class="download-name">API Quick Reference Card</div>
+          <div class="download-desc">One-page cheat sheet — endpoints, auth flow, common parameters. Print it out!</div>
+        </div>
+      </div>
+      <a href="downloads/api-quick-reference.pdf" class="btn btn-download">⬇ Download</a>
+    </div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div id="reference" class="section">
+    <h2>📋 Quick Reference</h2>
+    
+    <div class="card">
+      <h3 style="margin-top:0;">Authentication Flow</h3>
+      <pre><code>POST /ta/rest/v2/companies/{company_id}/oauth2/token
+
+Body (form-urlencoded):
+  grant_type    = client_credentials
+  client_id     = your_client_id
+  client_secret = your_client_secret
+
+Response:
+  { "access_token": "abc123...", "expires_in": 3600 }
+
+Use in all subsequent requests:
+  Header: Authorization: Bearer abc123...</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Common Endpoints</h3>
+      <pre><code><span class="code-comment"># Saved Reports (CSV)</span>
+GET /ta/rest/v1/report/saved/{report_id}
+Accept: text/csv
+
+<span class="code-comment"># Employee List</span>
+GET /ta/rest/v2/companies/{company_id}/employees
+
+<span class="code-comment"># Employee Details</span>
+GET /ta/rest/v2/companies/{company_id}/employees/{employee_id}
+
+<span class="code-comment"># Time Entries</span>
+GET /ta/rest/v2/companies/{company_id}/time-entries</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">PowerShell Cheat Sheet</h3>
+      <pre><code><span class="code-comment"># GET request</span>
+$result = Invoke-RestMethod -Uri $url -Headers $headers -Method GET
+
+<span class="code-comment"># POST request with body</span>
+$result = Invoke-RestMethod -Uri $url -Method POST -Body $body
+
+<span class="code-comment"># Save to CSV</span>
+$result | Export-Csv -Path "output.csv" -NoTypeInformation
+
+<span class="code-comment"># Read a CSV</span>
+$data = Import-Csv "input.csv"
+
+<span class="code-comment"># Filter rows</span>
+$filtered = $data | Where-Object { $_.Department -eq "Tax" }
+
+<span class="code-comment"># Select columns</span>
+$slim = $data | Select-Object Name, EmployeeId, Amount
+
+<span class="code-comment"># Sort</span>
+$sorted = $data | Sort-Object Amount -Descending
+
+<span class="code-comment"># Group & summarize (like a pivot table!)</span>
+$data | Group-Object Department | ForEach-Object {
+    [PSCustomObject]@{
+        Department = $_.Name
+        Count      = $_.Count
+        Total      = ($_.Group | Measure-Object Amount -Sum).Sum
+    }
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Common Status Codes</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:0.5rem;"><strong style="color:var(--success);">200</strong> — Success! Data is in the response.</li>
+        <li style="margin-bottom:0.5rem;"><strong style="color:var(--warning);">401</strong> — Not authenticated. Token expired? Re-run the auth request.</li>
+        <li style="margin-bottom:0.5rem;"><strong style="color:var(--warning);">403</strong> — Forbidden. You don't have permission for this endpoint.</li>
+        <li style="margin-bottom:0.5rem;"><strong style="color:var(--warning);">404</strong> — Not found. Check the URL/report ID.</li>
+        <li style="margin-bottom:0.5rem;"><strong style="color:#f87171;">429</strong> — Too many requests. Slow down, wait a few seconds.</li>
+        <li style="margin-bottom:0.5rem;"><strong style="color:#f87171;">500</strong> — Server error. Not your fault. Try again in a minute.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ASK -->
+  <div id="ask" class="section">
+    <h2>💬 Ask a Question</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+      Stuck on something? Need a script modified? Just curious how something works? Send it over. Duder will get back to you — usually same day. No question is too basic.
+    </p>
+
+    <div class="ask-form">
+      <div class="form-group">
+        <label>What's your question about?</label>
+        <select id="askTopic">
+          <option value="">Pick a topic...</option>
+          <option value="postman">Postman / Getting Started</option>
+          <option value="api">API / Endpoints / Data</option>
+          <option value="powershell">PowerShell Scripts</option>
+          <option value="report">Specific Report Help</option>
+          <option value="error">Something's Not Working</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your question</label>
+        <textarea id="askQuestion" placeholder="What are you trying to do? What happened? What did you expect?"></textarea>
+        <div class="form-note">Include any error messages if you got them — screenshots work too.</div>
+      </div>
+      <div class="form-group">
+        <label>Your email</label>
+        <input type="email" id="askEmail" placeholder="heather.cummings@..." />
+        <div class="form-note">So Duder can get back to you.</div>
+      </div>
+      <button class="btn btn-primary" onclick="submitQuestion()" id="askSubmitBtn">🎳 Send to Duder</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Navigation
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// Lessons
+function toggleLesson(n) {
+  const el = document.getElementById('lesson' + n);
+  el.classList.toggle('open');
+}
+
+// Progress tracking
+const TOTAL_LESSONS = 6;
+let completed = JSON.parse(localStorage.getItem('heather-completed') || '[]');
+updateProgress();
+
+function completeLesson(n) {
+  if (!completed.includes(n)) {
+    completed.push(n);
+    localStorage.setItem('heather-completed', JSON.stringify(completed));
+    document.getElementById('ln' + n).style.background = 'var(--success)';
+    updateProgress();
+    showToast('Lesson ' + n + ' complete! 🎉');
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.length / TOTAL_LESSONS) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  completed.forEach(n => {
+    const el = document.getElementById('ln' + n);
+    if (el) el.style.background = 'var(--success)';
+  });
+}
+
+// Ask form
+async function submitQuestion() {
+  const topic = document.getElementById('askTopic').value;
+  const question = document.getElementById('askQuestion').value;
+  const email = document.getElementById('askEmail').value;
+  
+  if (!question.trim()) { showToast('Please enter your question!'); return; }
+  if (!email.trim()) { showToast('Please enter your email!'); return; }
+
+  const btn = document.getElementById('askSubmitBtn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, question, email })
+    });
+    if (resp.ok) {
+      showToast('Question sent! Duder will get back to you. 🎳');
+      document.getElementById('askQuestion').value = '';
+      document.getElementById('askTopic').value = '';
+    } else {
+      showToast('Hmm, something went wrong. Try emailing Chuck directly.');
+    }
+  } catch(e) {
+    // Fallback: mailto
+    const subject = encodeURIComponent(`API Lab Question: ${topic || 'General'}`);
+    const body = encodeURIComponent(`From: ${email}\nTopic: ${topic}\n\n${question}`);
+    window.location.href = `mailto:chckbrtt@gmail.com?subject=${subject}&body=${body}`;
+    showToast('Opening your email client as a backup...');
+  }
+  
+  btn.textContent = '🎳 Send to Duder';
+  btn.disabled = false;
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+
+</body>
+</html>
