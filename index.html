@@ -232,6 +232,100 @@
     .nav a { padding: 0.75rem 1rem; font-size: 0.8rem; }
   }
   
+  /* Playground */
+  .playground {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .playground h3 { color: var(--accent); margin: 0 0 1rem; }
+  .cred-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .cred-grid .full { grid-column: 1 / -1; }
+  .cred-grid label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.2rem; display: block; }
+  .cred-grid input {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 0.85rem;
+  }
+  .cred-grid input:focus { outline: none; border-color: var(--primary-light); }
+  .cred-save { color: var(--success); font-size: 0.8rem; display: none; margin-left: 0.5rem; }
+  .endpoint-picker {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .endpoint-picker select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.6rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .response-box {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 0.8rem;
+    color: #e6edf3;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-height: 80px;
+  }
+  .response-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-badge.s2xx { background: #065f46; color: #34d399; }
+  .status-badge.s4xx { background: #713f12; color: #fbbf24; }
+  .status-badge.s5xx { background: #7f1d1d; color: #f87171; }
+  .status-badge.loading { background: var(--surface2); color: var(--text-muted); }
+  .step-indicator {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .step.active { border-color: var(--accent); color: var(--accent); }
+  .step.done { border-color: var(--success); color: var(--success); }
+
   /* Toast notification */
   .toast {
     position: fixed;
@@ -285,6 +379,8 @@
   <a href="#" onclick="showSection('lessons',this)">📚 Lessons</a>
   <a href="#" onclick="showSection('downloads',this)">📦 Downloads</a>
   <a href="#" onclick="showSection('reference',this)">📋 Quick Reference</a>
+  <a href="#" onclick="showSection('playground',this)">🚀 Try It Now</a>
+  <a href="#" onclick="showSection('setup',this)">🔧 OAuth Setup</a>
   <a href="#" onclick="showSection('ask',this)">💬 Ask a Question</a>
 </div>
 
@@ -781,6 +877,221 @@ $data | Group-Object Department | ForEach-Object {
     </div>
   </div>
 
+  <!-- PLAYGROUND -->
+  <div id="playground" class="section">
+    <h2>🚀 Try It Now</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+      Enter your credentials below and make real API calls — right from this page. No Postman, no scripts. Just click and see data come back.
+    </p>
+
+    <div class="step-indicator">
+      <div class="step" id="step1">① Enter Credentials</div>
+      <div class="step" id="step2">② Authenticate</div>
+      <div class="step" id="step3">③ Pull Data</div>
+    </div>
+
+    <!-- Step 1: Credentials -->
+    <div class="playground">
+      <h3>① Your Credentials <span class="cred-save" id="credSaved">✓ Saved to this browser</span></h3>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">
+        These stay in your browser only — they're never stored on the server. Need help getting these? Check the <a href="#" onclick="showSection('setup',document.querySelector('.nav a:nth-child(7)'))" style="color:var(--accent);">OAuth Setup</a> guide.
+      </p>
+      <div class="cred-grid">
+        <div>
+          <label>Company ID</label>
+          <input type="text" id="credCid" placeholder="e.g. 33629692" oninput="saveCreds()">
+        </div>
+        <div>
+          <label>Base URL</label>
+          <input type="text" id="credUrl" placeholder="e.g. secure2.saashr.com" value="secure2.saashr.com" oninput="saveCreds()">
+        </div>
+        <div>
+          <label>OAuth Client ID</label>
+          <input type="text" id="credClientId" placeholder="Your client_id" oninput="saveCreds()">
+        </div>
+        <div>
+          <label>OAuth Client Secret</label>
+          <input type="password" id="credClientSecret" placeholder="Your client_secret" oninput="saveCreds()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Authenticate -->
+    <div class="playground">
+      <h3>② Authenticate</h3>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">
+        This gets you an access token. Tokens expire after 1 hour — just click again to get a new one.
+      </p>
+      <button class="btn btn-primary" onclick="doAuth()" id="authBtn">🔑 Get Access Token</button>
+      <span id="tokenStatus" style="margin-left:1rem;font-size:0.85rem;color:var(--text-muted);"></span>
+      <div id="authResponse" style="margin-top:1rem;display:none;">
+        <div class="response-meta">
+          <span class="status-badge" id="authStatus"></span>
+          <span style="font-size:0.75rem;color:var(--text-muted);" id="authTime"></span>
+        </div>
+        <div class="response-box" id="authData"></div>
+      </div>
+    </div>
+
+    <!-- Step 3: Pull Data -->
+    <div class="playground">
+      <h3>③ Pull Data</h3>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">
+        Pick an endpoint and hit Send. The data comes straight from your system.
+      </p>
+      <div class="endpoint-picker">
+        <select id="endpointSelect" onchange="onEndpointChange()">
+          <option value="">Pick an endpoint...</option>
+          <optgroup label="📊 Reports">
+            <option value="report-custom">Saved Report (enter Report ID)</option>
+          </optgroup>
+          <optgroup label="👥 Employees">
+            <option value="employees">Employee List (first 100)</option>
+            <option value="employee-detail">Employee Detail (enter Employee ID)</option>
+          </optgroup>
+          <optgroup label="🕐 Time & Attendance">
+            <option value="time-entries">Time Entries (today)</option>
+          </optgroup>
+          <optgroup label="🔍 Discovery">
+            <option value="api-info">API Info / Version</option>
+          </optgroup>
+        </select>
+        <button class="btn btn-primary" onclick="doRequest()" id="sendBtn">▶ Send</button>
+      </div>
+      
+      <!-- Dynamic parameter input -->
+      <div id="paramArea" style="display:none;margin-bottom:1rem;">
+        <div class="cred-grid">
+          <div class="full">
+            <label id="paramLabel">Parameter</label>
+            <input type="text" id="paramValue" placeholder="">
+          </div>
+        </div>
+      </div>
+
+      <div id="reqResponse" style="display:none;">
+        <div class="response-meta">
+          <div>
+            <span class="status-badge" id="reqStatus"></span>
+            <span style="font-size:0.75rem;color:var(--text-muted);margin-left:0.5rem;" id="reqEndpoint"></span>
+          </div>
+          <div>
+            <span style="font-size:0.75rem;color:var(--text-muted);" id="reqTime"></span>
+            <button class="btn btn-outline" style="padding:0.3rem 0.6rem;font-size:0.7rem;margin-left:0.5rem;" onclick="copyResponse()">📋 Copy</button>
+            <button class="btn btn-outline" style="padding:0.3rem 0.6rem;font-size:0.7rem;margin-left:0.25rem;" onclick="downloadResponse()">⬇ CSV</button>
+          </div>
+        </div>
+        <div class="response-box" id="reqData">Select an endpoint and click Send</div>
+        <p style="color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;" id="reqRowCount"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- OAUTH SETUP GUIDE -->
+  <div id="setup" class="section">
+    <h2>🔧 Setting Up OAuth in UKG Ready</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+      Before you can use the API, you need to create OAuth credentials in UKG Ready. This is a one-time setup. Here's how:
+    </p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">1️⃣</div>
+        <div>
+          <div class="card-title">Navigate to API Setup</div>
+        </div>
+      </div>
+      <ol style="color:var(--text-muted);">
+        <li>Log into UKG Ready as an administrator</li>
+        <li>Go to <strong>Menu → System Configuration → Security → OAuth API</strong></li>
+        <li>You'll see the OAuth API Clients page</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">2️⃣</div>
+        <div>
+          <div class="card-title">Create a New API Client</div>
+        </div>
+      </div>
+      <ol style="color:var(--text-muted);">
+        <li>Click <strong>Add</strong> to create a new API client</li>
+        <li>Give it a descriptive name (e.g., "Heather - Tax Reports")</li>
+        <li>For <strong>Grant Type</strong>, select <strong>Client Credentials</strong></li>
+        <li>Set the <strong>Token Expiration</strong> (default 3600 seconds = 1 hour is fine)</li>
+        <li>Click <strong>Save</strong></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">3️⃣</div>
+        <div>
+          <div class="card-title">Copy Your Credentials</div>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);">After saving, UKG Ready will show you:</p>
+      <ul style="color:var(--text-muted);">
+        <li><strong>Client ID</strong> — a long string like <code>960ca8a3-ba97-4910-845c-a18ac718d9fe</code></li>
+        <li><strong>Client Secret</strong> — another long string (⚠️ this is only shown ONCE — copy it now!)</li>
+      </ul>
+      <p style="color:#fbbf24;font-size:0.9rem;margin-top:0.75rem;">
+        ⚠️ <strong>Important:</strong> The client secret is shown only at creation. If you lose it, you'll need to regenerate it. Save both values somewhere safe (like a password manager).
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">4️⃣</div>
+        <div>
+          <div class="card-title">Set API Permissions</div>
+        </div>
+      </div>
+      <ol style="color:var(--text-muted);">
+        <li>On the API client you just created, go to the <strong>Permissions</strong> or <strong>Scope</strong> tab</li>
+        <li>Enable access to the endpoints you need:
+          <ul>
+            <li><strong>Reports</strong> — for pulling saved reports</li>
+            <li><strong>Personnel</strong> — for employee data</li>
+            <li><strong>Time</strong> — for time entries (if needed)</li>
+          </ul>
+        </li>
+        <li>Click <strong>Save</strong></li>
+      </ol>
+      <p style="color:var(--text-muted);margin-top:0.75rem;">
+        💡 <strong>Tip:</strong> Start with read-only permissions. You can always add more later. Read-only means you can pull data but can't accidentally change anything.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">5️⃣</div>
+        <div>
+          <div class="card-title">Find Your Company ID</div>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);">Your Company ID is in the URL when you're logged into UKG Ready. Look for the number after <code>/companies/</code> in the address bar. It's also visible on the API settings page.</p>
+      <p style="color:var(--text-muted);margin-top:0.5rem;">You can also ask Chuck — he'll know it off the top of his head. 😄</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">✅</div>
+        <div>
+          <div class="card-title">You're Ready!</div>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);">Now take your three values and head to the <a href="#" onclick="showSection('playground',document.querySelector('.nav a:nth-child(6)'))" style="color:var(--accent);font-weight:600;">🚀 Try It Now</a> page:</p>
+      <ul style="color:var(--text-muted);">
+        <li><strong>Company ID</strong> — the number you found</li>
+        <li><strong>Client ID</strong> — from step 3</li>
+        <li><strong>Client Secret</strong> — from step 3</li>
+      </ul>
+      <p style="color:var(--text-muted);margin-top:0.75rem;">Paste them in, click <strong>Get Access Token</strong>, and you're making live API calls. 🎉</p>
+    </div>
+  </div>
+
   <!-- ASK -->
   <div id="ask" class="section">
     <h2>💬 Ask a Question</h2>
@@ -920,6 +1231,280 @@ async function submitQuestion() {
   
   btn.textContent = '🎳 Send to Duder';
   btn.disabled = false;
+}
+
+// Playground - Credentials
+function saveCreds() {
+  const creds = {
+    cid: document.getElementById('credCid').value,
+    url: document.getElementById('credUrl').value,
+    clientId: document.getElementById('credClientId').value,
+    clientSecret: document.getElementById('credClientSecret').value
+  };
+  localStorage.setItem('heather-creds', JSON.stringify(creds));
+  const badge = document.getElementById('credSaved');
+  badge.style.display = 'inline';
+  setTimeout(() => badge.style.display = 'none', 2000);
+}
+
+function loadCreds() {
+  try {
+    const c = JSON.parse(localStorage.getItem('heather-creds'));
+    if (c) {
+      document.getElementById('credCid').value = c.cid || '';
+      document.getElementById('credUrl').value = c.url || 'secure2.saashr.com';
+      document.getElementById('credClientId').value = c.clientId || '';
+      document.getElementById('credClientSecret').value = c.clientSecret || '';
+    }
+  } catch(e) {}
+}
+loadCreds();
+
+function getCreds() {
+  return {
+    cid: document.getElementById('credCid').value.trim(),
+    url: document.getElementById('credUrl').value.trim(),
+    clientId: document.getElementById('credClientId').value.trim(),
+    clientSecret: document.getElementById('credClientSecret').value.trim()
+  };
+}
+
+let accessToken = null;
+let lastResponseData = null;
+
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  }
+}
+
+// Playground - Auth
+async function doAuth() {
+  const c = getCreds();
+  if (!c.cid || !c.clientId || !c.clientSecret) {
+    showToast('Fill in all credentials first!');
+    setStep(1);
+    return;
+  }
+  
+  const btn = document.getElementById('authBtn');
+  const status = document.getElementById('tokenStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Authenticating...';
+  status.textContent = '';
+  
+  document.getElementById('authResponse').style.display = 'block';
+  document.getElementById('authStatus').textContent = '⏳ Loading...';
+  document.getElementById('authStatus').className = 'status-badge loading';
+  document.getElementById('authData').textContent = 'Sending request...';
+  
+  const start = Date.now();
+  
+  try {
+    const resp = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: `https://${c.url}/ta/rest/v2/companies/${c.cid}/oauth2/token`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: {
+          grant_type: 'client_credentials',
+          client_id: c.clientId,
+          client_secret: c.clientSecret
+        }
+      })
+    });
+    
+    const result = await resp.json();
+    const elapsed = Date.now() - start;
+    document.getElementById('authTime').textContent = `${elapsed}ms`;
+    
+    const statusEl = document.getElementById('authStatus');
+    if (result.status === 200) {
+      const tokenData = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+      accessToken = tokenData.access_token;
+      statusEl.textContent = `✅ ${result.status} OK`;
+      statusEl.className = 'status-badge s2xx';
+      status.textContent = '🟢 Token active (1 hour)';
+      status.style.color = 'var(--success)';
+      // Show token preview (masked)
+      const preview = { ...tokenData, access_token: tokenData.access_token.substring(0, 20) + '...' };
+      document.getElementById('authData').textContent = JSON.stringify(preview, null, 2);
+      setStep(3);
+      showToast('Authenticated! You can now pull data. 🎉');
+    } else {
+      statusEl.textContent = `❌ ${result.status}`;
+      statusEl.className = 'status-badge s4xx';
+      document.getElementById('authData').textContent = JSON.stringify(result.data, null, 2);
+      status.textContent = '🔴 Auth failed — check credentials';
+      status.style.color = '#f87171';
+      setStep(1);
+    }
+  } catch(e) {
+    document.getElementById('authStatus').textContent = '❌ Error';
+    document.getElementById('authStatus').className = 'status-badge s5xx';
+    document.getElementById('authData').textContent = e.message;
+    status.textContent = '🔴 Request failed';
+    status.style.color = '#f87171';
+  }
+  
+  btn.disabled = false;
+  btn.textContent = '🔑 Get Access Token';
+}
+
+// Endpoint picker
+function onEndpointChange() {
+  const val = document.getElementById('endpointSelect').value;
+  const paramArea = document.getElementById('paramArea');
+  const paramLabel = document.getElementById('paramLabel');
+  const paramValue = document.getElementById('paramValue');
+  
+  if (val === 'report-custom') {
+    paramArea.style.display = 'block';
+    paramLabel.textContent = 'Saved Report ID';
+    paramValue.placeholder = 'e.g. 44461451 (find this in the report URL)';
+    paramValue.value = '';
+  } else if (val === 'employee-detail') {
+    paramArea.style.display = 'block';
+    paramLabel.textContent = 'Employee ID';
+    paramValue.placeholder = 'e.g. 12345';
+    paramValue.value = '';
+  } else {
+    paramArea.style.display = 'none';
+  }
+}
+
+// Playground - Data request
+async function doRequest() {
+  if (!accessToken) {
+    showToast('Authenticate first! Click "Get Access Token" above.');
+    setStep(2);
+    return;
+  }
+  
+  const c = getCreds();
+  const endpoint = document.getElementById('endpointSelect').value;
+  if (!endpoint) { showToast('Pick an endpoint first!'); return; }
+  
+  const param = document.getElementById('paramValue').value.trim();
+  let url = '';
+  let accept = 'application/json';
+  
+  switch(endpoint) {
+    case 'report-custom':
+      if (!param) { showToast('Enter a Report ID!'); return; }
+      url = `https://${c.url}/ta/rest/v1/report/saved/${param}`;
+      accept = 'text/csv';
+      break;
+    case 'employees':
+      url = `https://${c.url}/ta/rest/v2/companies/${c.cid}/employees?per_page=100`;
+      break;
+    case 'employee-detail':
+      if (!param) { showToast('Enter an Employee ID!'); return; }
+      url = `https://${c.url}/ta/rest/v2/companies/${c.cid}/employees/${param}`;
+      break;
+    case 'time-entries':
+      const today = new Date().toISOString().split('T')[0];
+      url = `https://${c.url}/ta/rest/v2/companies/${c.cid}/time-entries?start_date=${today}&end_date=${today}`;
+      break;
+    case 'api-info':
+      url = `https://${c.url}/ta/rest/v2/companies/${c.cid}/config/api-info`;
+      break;
+  }
+  
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading...';
+  
+  document.getElementById('reqResponse').style.display = 'block';
+  document.getElementById('reqStatus').textContent = '⏳ Loading...';
+  document.getElementById('reqStatus').className = 'status-badge loading';
+  document.getElementById('reqData').textContent = 'Fetching data...';
+  document.getElementById('reqRowCount').textContent = '';
+  
+  const start = Date.now();
+  
+  try {
+    const resp = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url,
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Accept': accept
+        }
+      })
+    });
+    
+    const result = await resp.json();
+    const elapsed = Date.now() - start;
+    
+    document.getElementById('reqTime').textContent = `${elapsed}ms`;
+    document.getElementById('reqEndpoint').textContent = url.replace(`https://${c.url}`, '');
+    
+    const statusEl = document.getElementById('reqStatus');
+    if (result.status >= 200 && result.status < 300) {
+      statusEl.textContent = `✅ ${result.status} OK`;
+      statusEl.className = 'status-badge s2xx';
+      
+      lastResponseData = result.data;
+      
+      if (typeof result.data === 'string') {
+        document.getElementById('reqData').textContent = result.data;
+        // Count CSV rows
+        const lines = result.data.split('\n').filter(l => l.trim());
+        if (lines.length > 1) {
+          document.getElementById('reqRowCount').textContent = `${lines.length - 1} rows returned (plus header)`;
+        }
+      } else {
+        const pretty = JSON.stringify(result.data, null, 2);
+        document.getElementById('reqData').textContent = pretty;
+        if (Array.isArray(result.data)) {
+          document.getElementById('reqRowCount').textContent = `${result.data.length} records returned`;
+        }
+      }
+    } else if (result.status === 401) {
+      statusEl.textContent = `⚠️ 401 Unauthorized`;
+      statusEl.className = 'status-badge s4xx';
+      document.getElementById('reqData').textContent = 'Token expired — click "Get Access Token" again.';
+      accessToken = null;
+      setStep(2);
+    } else {
+      statusEl.textContent = `❌ ${result.status}`;
+      statusEl.className = result.status >= 500 ? 'status-badge s5xx' : 'status-badge s4xx';
+      document.getElementById('reqData').textContent = typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2);
+    }
+  } catch(e) {
+    document.getElementById('reqStatus').textContent = '❌ Error';
+    document.getElementById('reqStatus').className = 'status-badge s5xx';
+    document.getElementById('reqData').textContent = e.message;
+  }
+  
+  btn.disabled = false;
+  btn.textContent = '▶ Send';
+}
+
+function copyResponse() {
+  const data = document.getElementById('reqData').textContent;
+  navigator.clipboard.writeText(data).then(() => showToast('Copied to clipboard! 📋'));
+}
+
+function downloadResponse() {
+  if (!lastResponseData) return;
+  let content = typeof lastResponseData === 'string' ? lastResponseData : JSON.stringify(lastResponseData, null, 2);
+  const ext = typeof lastResponseData === 'string' && lastResponseData.includes(',') ? 'csv' : 'json';
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `api-response-${new Date().toISOString().split('T')[0]}.${ext}`;
+  a.click();
+  showToast('Downloaded! ⬇');
 }
 
 // Toast
