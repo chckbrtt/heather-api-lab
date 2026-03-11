@@ -252,6 +252,29 @@
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div id="authGate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:2rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem;max-width:440px;width:100%;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔒</div>
+    <h2 style="margin-bottom:0.5rem;">Heather's API Lab</h2>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">This site is private. Enter your access code to continue.</p>
+    <input type="password" id="gatePass" placeholder="Access code" 
+      style="width:100%;padding:0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;text-align:center;margin-bottom:1rem;"
+      onkeydown="if(event.key==='Enter')checkGate()">
+    <button class="btn btn-primary" onclick="checkGate()" style="width:100%;justify-content:center;">Enter</button>
+    <p id="gateError" style="color:#f87171;font-size:0.85rem;margin-top:0.75rem;display:none;">Incorrect code. Check with Chuck if you need access.</p>
+    
+    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+      <p style="color:var(--text-muted);font-size:0.75rem;line-height:1.5;">
+        ⚠️ <strong>CONFIDENTIAL</strong> — This site was built exclusively for Heather Cummings and contains proprietary information about internal systems and data access methods. If you've reached this page in error, please close it immediately. Unauthorized access, distribution, or reproduction of this content is prohibited. Questions? Contact Chuck Britt.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT (hidden until auth) -->
+<div id="mainContent" style="display:none;">
+
 <div class="hero">
   <h1>Welcome, <span>Heather</span> 👋</h1>
   <p>Your personal guide to pulling data like a pro. No coding experience required — we'll get there together, one step at a time.</p>
@@ -795,6 +818,32 @@ $data | Group-Object Department | ForEach-Object {
 </div>
 
 <div class="toast" id="toast"></div>
+
+</div><!-- end mainContent -->
+
+<script>
+// Password gate — simple hash check (not meant to be Fort Knox, just a door)
+function checkGate() {
+  const pass = document.getElementById('gatePass').value;
+  // Simple hash to avoid plaintext password in source
+  const hash = Array.from(pass).reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 0);
+  if (hash === -63729833) { // password: HeatherAPI2026
+    sessionStorage.setItem('heather-auth', '1');
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  } else {
+    document.getElementById('gateError').style.display = 'block';
+    document.getElementById('gatePass').value = '';
+    document.getElementById('gatePass').focus();
+  }
+}
+
+// Check if already authed this session
+if (sessionStorage.getItem('heather-auth') === '1') {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+}
+</script>
 
 <script>
 // Navigation
