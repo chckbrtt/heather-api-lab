@@ -377,6 +377,7 @@
 <div class="nav">
   <a href="#" class="active" onclick="showSection('home',this)">🏠 Home</a>
   <a href="#" onclick="showSection('lessons',this)">📚 Lessons</a>
+  <a href="#" onclick="showSection('python',this)">🐍 Python Track</a>
   <a href="#" onclick="showSection('downloads',this)">📦 Downloads</a>
   <a href="#" onclick="showSection('reference',this)">📋 Quick Reference</a>
   <a href="#" onclick="showSection('playground',this)">🚀 Try It Now</a>
@@ -1092,6 +1093,294 @@ $data | Group-Object Department | ForEach-Object {
     </div>
   </div>
 
+  <!-- PYTHON TRACK -->
+  <div id="python" class="section">
+    <h2>🐍 Python Track</h2>
+    <p style="color:var(--text-muted);margin-bottom:0.5rem;">Learn UKG API concepts using Python. Interactive lessons — fill in the fields, hit Run, see the code. No real API calls — all simulated.</p>
+    <div class="progress-bar"><div class="progress-fill" id="pyProgressFill" style="width:0%"></div></div>
+
+    <!-- Python Lesson 1 -->
+    <div class="lesson-card" onclick="togglePyLesson(1)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="pyln1">1</span>
+        <div>
+          <div class="lesson-title">Variables & Configuration</div>
+          <div class="lesson-desc">Store your API endpoints and credentials in Python variables.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">Interactive</span>
+            <span class="lesson-tag api">Python Basics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="pylesson1">
+      <h3>Every script starts here</h3>
+      <p>Before you can talk to an API, you need to store your connection details — endpoints, credentials, company info. In Python, we use <strong>variables</strong>.</p>
+      
+      <div style="background:var(--surface2);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+        <label style="color:var(--accent);font-weight:600;display:block;margin-bottom:0.75rem;">Fill in your configuration:</label>
+        <div style="display:grid;gap:0.5rem;">
+          <input id="py1_base" class="code-input" placeholder="Base URL (e.g. https://secure2.saashr.com/ta/rest)" value="https://secure2.saashr.com/ta/rest" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py1_company" class="code-input" placeholder="Company Short Name" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py1_apikey" class="code-input" placeholder="API Key" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py1_clientid" class="code-input" placeholder="Client ID" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py1_secret" class="code-input" placeholder="Client Secret" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+        </div>
+        <button class="btn btn-primary" onclick="runPy1()" style="margin-top:0.75rem;">▶ Run Code</button>
+      </div>
+
+      <div id="py1_output" style="display:none;margin-top:1rem;">
+        <label style="color:var(--success);font-weight:600;display:block;margin-bottom:0.5rem;">📝 Your Generated Python Code:</label>
+        <div style="position:relative;">
+          <pre id="py1_code" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py1_code').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <div id="py1_result" style="background:#0c1425;border:1px solid #22d3ee33;border-radius:8px;padding:1rem;margin-top:0.75rem;font-family:monospace;font-size:0.85rem;white-space:pre;overflow-x:auto;"></div>
+      </div>
+
+      <div id="py1_concepts" style="display:none;background:var(--primary-dark);background:linear-gradient(135deg,#312e81,#1e1b4b);border-radius:8px;padding:1.25rem;margin-top:1rem;border:1px solid #4f46e5;">
+        <h4 style="color:var(--accent);margin-bottom:0.5rem;">🧠 Key Concepts</h4>
+        <ul style="color:var(--text-muted);list-style:disc;padding-left:1.25rem;">
+          <li><strong style="color:var(--text);">Variables</strong> — store values you reuse: <code>base_url = "https://..."</code></li>
+          <li><strong style="color:var(--text);">f-strings</strong> — embed variables in text: <code>f"{base_url}/v1"</code></li>
+          <li><strong style="color:var(--text);">String slicing</strong> — <code>[:8]</code> grabs first 8 characters (great for masking secrets)</li>
+          <li><strong style="color:var(--text);">NEVER hardcode secrets</strong> in production — Lesson 2 covers .env files</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completePyLesson(1);togglePyLesson(1);">✅ Got it — Next!</button>
+      </div>
+    </div>
+
+    <!-- Python Lesson 2 -->
+    <div class="lesson-card" onclick="togglePyLesson(2)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="pyln2">2</span>
+        <div>
+          <div class="lesson-title">Environment Variables & .env Files</div>
+          <div class="lesson-desc">Keep secrets out of your code. The right way to handle credentials.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">Interactive</span>
+            <span class="lesson-tag api">Security</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="pylesson2">
+      <h3>Rule #1: Never put passwords in your code</h3>
+      <p>In Lesson 1 we hardcoded everything. That works for learning, but in real life if you share that script or push it to Git, your credentials are exposed. The fix: <strong>.env files</strong> + the <code>python-dotenv</code> library.</p>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+        <label style="color:var(--accent);font-weight:600;display:block;margin-bottom:0.75rem;">Enter your credentials (same as Lesson 1):</label>
+        <div style="display:grid;gap:0.5rem;">
+          <input id="py2_base" class="code-input" placeholder="Base URL" value="https://secure2.saashr.com/ta/rest" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py2_company" class="code-input" placeholder="Company ID" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py2_apikey" class="code-input" placeholder="API Key" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py2_clientid" class="code-input" placeholder="Client ID" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py2_secret" class="code-input" placeholder="Client Secret" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+        </div>
+        <button class="btn btn-primary" onclick="runPy2()" style="margin-top:0.75rem;">▶ Generate .env + Script</button>
+      </div>
+
+      <div id="py2_output" style="display:none;margin-top:1rem;">
+        <label style="color:var(--warning);font-weight:600;display:block;margin-bottom:0.5rem;">📄 Your .env file (keep this SECRET — add to .gitignore!):</label>
+        <div style="position:relative;">
+          <pre id="py2_env" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py2_env').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <label style="color:var(--success);font-weight:600;display:block;margin:1rem 0 0.5rem;">🐍 Your Python script (safe to share!):</label>
+        <div style="position:relative;">
+          <pre id="py2_code" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py2_code').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <div id="py2_result" style="background:#0c1425;border:1px solid #22d3ee33;border-radius:8px;padding:1rem;margin-top:0.75rem;font-family:monospace;font-size:0.85rem;white-space:pre;overflow-x:auto;"></div>
+      </div>
+
+      <div id="py2_concepts" style="display:none;background:linear-gradient(135deg,#312e81,#1e1b4b);border-radius:8px;padding:1.25rem;margin-top:1rem;border:1px solid #4f46e5;">
+        <h4 style="color:var(--accent);margin-bottom:0.5rem;">🧠 Key Concepts</h4>
+        <ul style="color:var(--text-muted);list-style:disc;padding-left:1.25rem;">
+          <li><strong style="color:var(--text);">.env file</strong> — plain text file with KEY=VALUE pairs, never committed to Git</li>
+          <li><strong style="color:var(--text);">python-dotenv</strong> — <code>load_dotenv()</code> reads .env into environment variables</li>
+          <li><strong style="color:var(--text);">os.getenv()</strong> — reads environment variables safely</li>
+          <li><strong style="color:var(--text);">.gitignore</strong> — always add <code>.env</code> to prevent accidental commits</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completePyLesson(2);togglePyLesson(2);">✅ Got it — Next!</button>
+      </div>
+    </div>
+
+    <!-- Python Lesson 3 -->
+    <div class="lesson-card" onclick="togglePyLesson(3)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="pyln3">3</span>
+        <div>
+          <div class="lesson-title">Authentication — v1 Token Login</div>
+          <div class="lesson-desc">Log in to UKG's v1 API and get a session token using requests.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">Interactive</span>
+            <span class="lesson-tag api">requests library</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="pylesson3">
+      <h3>Your first real API call (simulated)</h3>
+      <p>The v1 API uses <strong>token-based auth</strong>. You POST your credentials to <code>/v1/login</code> and get back a token. That token is your "badge" for all subsequent requests.</p>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+        <label style="color:var(--accent);font-weight:600;display:block;margin-bottom:0.75rem;">Enter your v1 credentials:</label>
+        <div style="display:grid;gap:0.5rem;">
+          <input id="py3_base" class="code-input" placeholder="Base URL" value="https://secure2.saashr.com/ta/rest" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py3_apikey" class="code-input" placeholder="API Key" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py3_user" class="code-input" placeholder="Username" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py3_pass" class="code-input" placeholder="Password" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py3_company" class="code-input" placeholder="Company Short Name" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+        </div>
+        <button class="btn btn-primary" onclick="runPy3()" style="margin-top:0.75rem;">▶ Authenticate</button>
+      </div>
+
+      <div id="py3_output" style="display:none;margin-top:1rem;">
+        <label style="color:var(--success);font-weight:600;display:block;margin-bottom:0.5rem;">🐍 Python Code:</label>
+        <div style="position:relative;">
+          <pre id="py3_code" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py3_code').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <label style="color:var(--accent);font-weight:600;display:block;margin:0.75rem 0 0.25rem;">📨 Simulated Response (200 OK):</label>
+        <div id="py3_result" style="background:#0c1425;border:1px solid #22d3ee33;border-radius:8px;padding:1rem;font-family:monospace;font-size:0.85rem;white-space:pre;overflow-x:auto;"></div>
+        <div id="py3_validation" style="margin-top:0.75rem;"></div>
+      </div>
+
+      <div id="py3_concepts" style="display:none;background:linear-gradient(135deg,#312e81,#1e1b4b);border-radius:8px;padding:1.25rem;margin-top:1rem;border:1px solid #4f46e5;">
+        <h4 style="color:var(--accent);margin-bottom:0.5rem;">🧠 Key Concepts</h4>
+        <ul style="color:var(--text-muted);list-style:disc;padding-left:1.25rem;">
+          <li><strong style="color:var(--text);">requests.post()</strong> — sends a POST request (used for login, creating data)</li>
+          <li><strong style="color:var(--text);">JSON payload</strong> — <code>json={...}</code> automatically sets Content-Type</li>
+          <li><strong style="color:var(--text);">Custom headers</strong> — <code>headers={"Api-Key": key}</code> sends the API key</li>
+          <li><strong style="color:var(--text);">response.json()</strong> — parses the JSON response into a Python dict</li>
+          <li><strong style="color:var(--text);">Token auth</strong> — login once, use the token for all subsequent calls</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completePyLesson(3);togglePyLesson(3);">✅ Got it — Next!</button>
+      </div>
+    </div>
+
+    <!-- Python Lesson 4 -->
+    <div class="lesson-card" onclick="togglePyLesson(4)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="pyln4">4</span>
+        <div>
+          <div class="lesson-title">OAuth2 Authentication (v2 API)</div>
+          <div class="lesson-desc">Get a Bearer token using OAuth2 client credentials. The modern way.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">Interactive</span>
+            <span class="lesson-tag api">OAuth2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="pylesson4">
+      <h3>v2 uses OAuth2 — the industry standard</h3>
+      <p>The v2 API uses <strong>OAuth2 Client Credentials</strong> flow. Instead of username/password, you use a <code>client_id</code> and <code>client_secret</code> to get a Bearer token. The request is <strong>form-encoded</strong> (not JSON) — a common gotcha.</p>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+        <label style="color:var(--accent);font-weight:600;display:block;margin-bottom:0.75rem;">Enter your v2 OAuth2 credentials:</label>
+        <div style="display:grid;gap:0.5rem;">
+          <input id="py4_base" class="code-input" placeholder="Base URL" value="https://secure2.saashr.com/ta/rest" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py4_company" class="code-input" placeholder="Company ID (numeric)" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py4_clientid" class="code-input" placeholder="Client ID" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py4_secret" class="code-input" placeholder="Client Secret" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+        </div>
+        <button class="btn btn-primary" onclick="runPy4()" style="margin-top:0.75rem;">▶ Get Token</button>
+      </div>
+
+      <div id="py4_output" style="display:none;margin-top:1rem;">
+        <label style="color:var(--success);font-weight:600;display:block;margin-bottom:0.5rem;">🐍 Python Code:</label>
+        <div style="position:relative;">
+          <pre id="py4_code" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py4_code').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <label style="color:var(--accent);font-weight:600;display:block;margin:0.75rem 0 0.25rem;">📨 Simulated Response (200 OK):</label>
+        <div id="py4_result" style="background:#0c1425;border:1px solid #22d3ee33;border-radius:8px;padding:1rem;font-family:monospace;font-size:0.85rem;white-space:pre;overflow-x:auto;"></div>
+      </div>
+
+      <div id="py4_concepts" style="display:none;background:linear-gradient(135deg,#312e81,#1e1b4b);border-radius:8px;padding:1.25rem;margin-top:1rem;border:1px solid #4f46e5;">
+        <h4 style="color:var(--accent);margin-bottom:0.5rem;">🧠 Key Concepts</h4>
+        <ul style="color:var(--text-muted);list-style:disc;padding-left:1.25rem;">
+          <li><strong style="color:var(--text);">OAuth2 Client Credentials</strong> — machine-to-machine auth, no user login needed</li>
+          <li><strong style="color:var(--text);">Form-encoded vs JSON</strong> — OAuth2 uses <code>data={}</code> not <code>json={}</code> — huge gotcha!</li>
+          <li><strong style="color:var(--text);">Bearer token</strong> — sent in the <code>Authorization</code> header for v2 calls</li>
+          <li><strong style="color:var(--text);">Token expiry</strong> — tokens last 3600 seconds (1 hour), then you need a new one</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completePyLesson(4);togglePyLesson(4);">✅ Got it — Next!</button>
+      </div>
+    </div>
+
+    <!-- Python Lesson 5 -->
+    <div class="lesson-card" onclick="togglePyLesson(5)">
+      <div style="display:flex;align-items:center;">
+        <span class="lesson-num" id="pyln5">5</span>
+        <div>
+          <div class="lesson-title">Pull a Saved Report</div>
+          <div class="lesson-desc">Use your token to pull real report data. The payoff for all your learning.</div>
+          <div class="lesson-meta">
+            <span class="lesson-tag">Interactive</span>
+            <span class="lesson-tag api">GET Request + CSV</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-content" id="pylesson5">
+      <h3>The moment of truth</h3>
+      <p>This is why you learned all of that. You authenticate, get a token, and then use it to <strong>pull a saved report</strong>. The report comes back as CSV data — same format as an Excel export, but delivered straight to your script.</p>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+        <label style="color:var(--accent);font-weight:600;display:block;margin-bottom:0.75rem;">Enter your report details:</label>
+        <div style="display:grid;gap:0.5rem;">
+          <input id="py5_base" class="code-input" placeholder="Base URL" value="https://secure2.saashr.com/ta/rest" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py5_token" class="code-input" placeholder="Your token (from Lesson 3 or 4)" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+          <input id="py5_report" class="code-input" placeholder="Saved Report ID (e.g. 43994775)" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem;border-radius:4px;font-family:monospace;font-size:0.85rem;">
+        </div>
+        <button class="btn btn-primary" onclick="runPy5()" style="margin-top:0.75rem;">▶ Pull Report</button>
+      </div>
+
+      <div id="py5_output" style="display:none;margin-top:1rem;">
+        <label style="color:var(--success);font-weight:600;display:block;margin-bottom:0.5rem;">🐍 Python Code:</label>
+        <div style="position:relative;">
+          <pre id="py5_code" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;font-size:0.85rem;line-height:1.5;"></pre>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('py5_code').textContent).then(()=>showToast('Copied! 📋'))" style="position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">Copy</button>
+        </div>
+        <label style="color:var(--accent);font-weight:600;display:block;margin:0.75rem 0 0.25rem;">📨 Simulated Response (200 OK) — CSV Data:</label>
+        <div id="py5_csv" style="background:#0c1425;border:1px solid #22d3ee33;border-radius:8px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre;overflow-x:auto;"></div>
+        <label style="color:var(--success);font-weight:600;display:block;margin:0.75rem 0 0.25rem;">📄 Parsed with Python's csv module:</label>
+        <div id="py5_parsed" style="background:#0c1425;border:1px solid #34d39933;border-radius:8px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre;overflow-x:auto;"></div>
+      </div>
+
+      <div id="py5_concepts" style="display:none;background:linear-gradient(135deg,#312e81,#1e1b4b);border-radius:8px;padding:1.25rem;margin-top:1rem;border:1px solid #4f46e5;">
+        <h4 style="color:var(--accent);margin-bottom:0.5rem;">🧠 Key Concepts</h4>
+        <ul style="color:var(--text-muted);list-style:disc;padding-left:1.25rem;">
+          <li><strong style="color:var(--text);">requests.get()</strong> — GET requests retrieve data (vs POST which sends data)</li>
+          <li><strong style="color:var(--text);">Authentication header</strong> — <code>"Authentication": "Bearer {token}"</code> proves who you are</li>
+          <li><strong style="color:var(--text);">Accept header</strong> — <code>"Accept": "text/csv"</code> tells UKG you want CSV format</li>
+          <li><strong style="color:var(--text);">csv.DictReader</strong> — parses CSV into dictionaries (column names become keys)</li>
+          <li><strong style="color:var(--text);">response.text</strong> — use <code>.text</code> for CSV/strings, <code>.json()</code> for JSON</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="completePyLesson(5);togglePyLesson(5);">🎉 Python Track Complete!</button>
+      </div>
+    </div>
+
+  </div>
+
   <!-- ASK -->
   <div id="ask" class="section">
     <h2>💬 Ask a Question</h2>
@@ -1193,6 +1482,312 @@ function updateProgress() {
     const el = document.getElementById('ln' + n);
     if (el) el.style.background = 'var(--success)';
   });
+}
+
+// Python Track
+const PY_TOTAL = 5;
+let pyCompleted = JSON.parse(localStorage.getItem('heather-py-completed') || '[]');
+updatePyProgress();
+
+function togglePyLesson(n) {
+  const el = document.getElementById('pylesson' + n);
+  el.classList.toggle('open');
+}
+
+function completePyLesson(n) {
+  if (!pyCompleted.includes(n)) {
+    pyCompleted.push(n);
+    localStorage.setItem('heather-py-completed', JSON.stringify(pyCompleted));
+    document.getElementById('pyln' + n).style.background = 'var(--success)';
+    updatePyProgress();
+    showToast('Python Lesson ' + n + ' complete! 🐍');
+  }
+}
+
+function updatePyProgress() {
+  const pct = Math.round((pyCompleted.length / PY_TOTAL) * 100);
+  const el = document.getElementById('pyProgressFill');
+  if (el) el.style.width = pct + '%';
+  pyCompleted.forEach(n => {
+    const el = document.getElementById('pyln' + n);
+    if (el) el.style.background = 'var(--success)';
+  });
+}
+
+function esc(s) { return s.replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function runPy1() {
+  const base = document.getElementById('py1_base').value || 'https://secure2.saashr.com/ta/rest';
+  const company = document.getElementById('py1_company').value || 'YOURCOMPANY';
+  const apikey = document.getElementById('py1_apikey').value || 'your-api-key';
+  const clientid = document.getElementById('py1_clientid').value || 'your-client-id';
+  const secret = document.getElementById('py1_secret').value || 'your-secret';
+
+  const code = `# UKG Ready API - Configuration
+import requests
+
+# API Endpoints
+base_url = "${base}"
+uri_v1 = f"{base_url}/v1"
+uri_v2 = f"{base_url}/v2"
+
+# Company
+company_id = "${company}"
+
+# Credentials
+api_key = "${apikey}"
+client_id = "${clientid}"
+client_secret = "${secret}"
+
+# Verify configuration
+print("=== UKG API Configuration ===")
+print(f"V1 Endpoint:   {uri_v1}")
+print(f"V2 Endpoint:   {uri_v2}")
+print(f"Company:       {company_id}")
+print(f"Client ID:     {client_id[:8]}...")  # masked!
+print(f"Secret:        {'*' * len(client_secret)}")`;
+
+  const maskedId = clientid.length > 8 ? clientid.substring(0,8) + '...' : clientid + '...';
+  const result = `<span style="color:var(--success)">✅ Output:</span>
+=== UKG API Configuration ===
+V1 Endpoint:   ${base}/v1
+V2 Endpoint:   ${base}/v2
+Company:       ${company}
+Client ID:     ${maskedId}
+Secret:        ${'*'.repeat(secret.length || 12)}`;
+
+  document.getElementById('py1_code').textContent = code;
+  document.getElementById('py1_result').innerHTML = result;
+  document.getElementById('py1_output').style.display = 'block';
+  document.getElementById('py1_concepts').style.display = 'block';
+}
+
+function runPy2() {
+  const base = document.getElementById('py2_base').value || 'https://secure2.saashr.com/ta/rest';
+  const company = document.getElementById('py2_company').value || 'YOURCOMPANY';
+  const apikey = document.getElementById('py2_apikey').value || 'your-api-key';
+  const clientid = document.getElementById('py2_clientid').value || 'your-client-id';
+  const secret = document.getElementById('py2_secret').value || 'your-secret';
+
+  const envFile = `# .env - KEEP THIS SECRET!
+# Add to .gitignore: echo ".env" >> .gitignore
+
+UKG_BASE_URL=${base}
+UKG_COMPANY=${company}
+UKG_API_KEY=${apikey}
+UKG_CLIENT_ID=${clientid}
+UKG_CLIENT_SECRET=${secret}`;
+
+  const code = `# pip install python-dotenv requests
+import os
+from dotenv import load_dotenv
+
+# Load .env file into environment
+load_dotenv()
+
+# Read from environment (not hardcoded!)
+base_url = os.getenv("UKG_BASE_URL")
+company_id = os.getenv("UKG_COMPANY")
+api_key = os.getenv("UKG_API_KEY")
+client_id = os.getenv("UKG_CLIENT_ID")
+client_secret = os.getenv("UKG_CLIENT_SECRET")
+
+print("✅ Loaded from .env:")
+print(f"   Base URL:  {base_url}")
+print(f"   Company:   {company_id}")
+print(f"   Client ID: {client_id[:8]}...")`;
+
+  const maskedId = clientid.length > 8 ? clientid.substring(0,8) + '...' : clientid;
+  const result = `<span style="color:var(--success)">✅ Loaded from .env:</span>
+   Base URL:  ${base}
+   Company:   ${company}
+   Client ID: ${maskedId}
+
+<span style="color:var(--warning)">💡 Notice: No secrets in the Python file!
+   Anyone can see your .py file safely.
+   The .env stays on YOUR machine only.</span>`;
+
+  document.getElementById('py2_env').textContent = envFile;
+  document.getElementById('py2_code').textContent = code;
+  document.getElementById('py2_result').innerHTML = result;
+  document.getElementById('py2_output').style.display = 'block';
+  document.getElementById('py2_concepts').style.display = 'block';
+}
+
+function runPy3() {
+  const base = document.getElementById('py3_base').value || 'https://secure2.saashr.com/ta/rest';
+  const apikey = document.getElementById('py3_apikey').value || 'your-api-key';
+  const user = document.getElementById('py3_user').value || 'reportuser';
+  const pass = document.getElementById('py3_pass').value || 'YourPassword';
+  const company = document.getElementById('py3_company').value || 'YOURCOMPANY';
+
+  const code = `import requests
+
+base_url = "${base}"
+api_key = "${apikey}"
+
+# v1 Authentication
+response = requests.post(
+    f"{base_url}/v1/login",
+    headers={
+        "Content-Type": "application/json",
+        "Api-Key": api_key
+    },
+    json={
+        "credentials": {
+            "username": "${user}",
+            "password": "${pass}",
+            "company": "${company}"
+        }
+    }
+)
+
+print(f"Status: {response.status_code}")
+
+if response.status_code == 200:
+    data = response.json()
+    token = data["token"]
+    print(f"✅ Token: {token[:20]}...")
+else:
+    print(f"❌ Login failed: {response.text}")`;
+
+  const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoiMTIzNCIsInVzZXIiOiJyZXBvcnR1c2VyIiwiZXhwIjoxNzEyMDAwMDAwfQ.simulated_signature_here';
+  const result = `<span style="color:var(--accent)">Status: 200</span>
+
+<span style="color:var(--success)">Response JSON:</span>
+{
+  "token": "${fakeToken.substring(0,50)}...",
+  "type": "Bearer"
+}`;
+
+  let validation = '';
+  const missing = [];
+  if (!document.getElementById('py3_apikey').value) missing.push('API Key');
+  if (!document.getElementById('py3_user').value) missing.push('Username');
+  if (!document.getElementById('py3_pass').value) missing.push('Password');
+  if (!document.getElementById('py3_company').value) missing.push('Company');
+
+  if (missing.length > 0) {
+    validation = `<div style="background:#7f1d1d44;border:1px solid #ef444488;border-radius:8px;padding:0.75rem;"><span style="color:#ef4444;">⚠️ Missing fields: ${missing.join(', ')}</span><br><span style="color:var(--text-muted);font-size:0.85rem;">In production, this would return a 401 Unauthorized error.</span></div>`;
+  } else {
+    validation = `<div style="background:#05381e44;border:1px solid #34d39988;border-radius:8px;padding:0.75rem;"><span style="color:var(--success);">✅ All fields present! This request is correctly formed.</span><br><span style="color:var(--text-muted);font-size:0.85rem;">Save the token — you'll need it for Lesson 5.</span></div>`;
+  }
+
+  document.getElementById('py3_code').textContent = code;
+  document.getElementById('py3_result').innerHTML = result;
+  document.getElementById('py3_validation').innerHTML = validation;
+  document.getElementById('py3_output').style.display = 'block';
+  document.getElementById('py3_concepts').style.display = 'block';
+}
+
+function runPy4() {
+  const base = document.getElementById('py4_base').value || 'https://secure2.saashr.com/ta/rest';
+  const company = document.getElementById('py4_company').value || '33629692';
+  const clientid = document.getElementById('py4_clientid').value || 'your-client-id';
+  const secret = document.getElementById('py4_secret').value || 'your-secret';
+
+  const code = `import requests
+
+base_url = "${base}"
+company_id = "${company}"
+client_id = "${clientid}"
+client_secret = "${secret}"
+
+# OAuth2 Token Request
+# ⚠️ NOTE: This uses data= (form-encoded), NOT json=
+response = requests.post(
+    f"{base_url}/v2/companies/{company_id}/oauth2/token",
+    data={                          # <-- form-encoded!
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret
+    },
+    headers={
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+)
+
+print(f"Status: {response.status_code}")
+
+if response.status_code == 200:
+    token_data = response.json()
+    access_token = token_data["access_token"]
+    expires_in = token_data["expires_in"]
+    print(f"✅ Token: {access_token[:20]}...")
+    print(f"   Expires in: {expires_in} seconds")
+else:
+    print(f"❌ OAuth failed: {response.text}")`;
+
+  const fakeToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnQiOiJhYmMtMTIzIiwiY29tcGFueSI6IjMzNjI5IiwiZXhwIjoxNzEyMDAzNjAwfQ.v2_oauth_simulated';
+  const result = `<span style="color:var(--accent)">Status: 200</span>\n\n<span style="color:var(--success)">Response JSON:</span>\n{\n  "access_token": "${fakeToken.substring(0,50)}...",\n  "token_type": "Bearer",\n  "expires_in": 3600\n}\n\n<span style="color:var(--warning)">💡 Key difference from v1:</span>\n   v1: json={...} with username/password\n   v2: data={...} with client_id/secret (form-encoded!)\n   This trips up EVERYONE the first time.`;
+
+  document.getElementById('py4_code').textContent = code;
+  document.getElementById('py4_result').innerHTML = result;
+  document.getElementById('py4_output').style.display = 'block';
+  document.getElementById('py4_concepts').style.display = 'block';
+}
+
+function runPy5() {
+  const base = document.getElementById('py5_base').value || 'https://secure2.saashr.com/ta/rest';
+  const token = document.getElementById('py5_token').value || 'your-token-here';
+  const report = document.getElementById('py5_report').value || '43994775';
+
+  const code = `import requests
+import csv
+import io
+
+base_url = "${base}"
+token = "${token.length > 30 ? token.substring(0,20) + '...' : token}"
+report_id = "${report}"
+
+# Pull a saved report (CSV format)
+response = requests.get(
+    f"{base_url}/v1/report/saved/{report_id}",
+    headers={
+        "Authentication": f"Bearer {token}",
+        "Accept": "text/csv"
+    }
+)
+
+print(f"Status: {response.status_code}")
+print(f"Content-Type: {response.headers.get('content-type')}")
+print()
+
+if response.status_code == 200:
+    # Parse CSV into rows
+    reader = csv.DictReader(io.StringIO(response.text))
+    
+    for row in reader:
+        print(f"{row['first_name']} {row['last_name']} - {row['job']} ({row['status']})")
+else:
+    print(f"❌ Report pull failed: {response.text}")`;
+
+  const csvData = `account_id,first_name,last_name,employee_id,email,job,status,hire_date,pay_rate,pay_type
+101,Sarah,Johnson,EMP001,sjohnson@company.com,General Manager,Active,2019-03-15,62000,Salary
+102,Mike,Chen,EMP002,mchen@company.com,Captain,Active,2020-08-01,18.50,Hourly
+103,Jessica,Williams,EMP003,jwilliams@company.com,Team Member,Active,2023-01-10,16.00,Hourly
+104,David,Martinez,EMP004,dmartinez@company.com,Assistant GM,Active,2021-06-20,52000,Salary
+105,Ashley,Brown,EMP005,abrown@company.com,Team Member,Terminated,2022-11-30,15.50,Hourly
+106,James,Taylor,EMP006,jtaylor@company.com,Captain,Active,2024-02-14,19.00,Hourly`;
+
+  const parsed = `<span style="color:var(--success)">✅ Parsed 6 employees:</span>
+
+Sarah Johnson - General Manager (Active)
+Mike Chen - Captain (Active)
+Jessica Williams - Team Member (Active)
+David Martinez - Assistant GM (Active)
+Ashley Brown - Team Member (<span style="color:#ef4444">Terminated</span>)
+James Taylor - Captain (Active)
+
+<span style="color:var(--warning)">💡 csv.DictReader turns each CSV row into a dictionary.
+   Access fields by name: row['first_name'], row['job']
+   No more counting column numbers!</span>`;
+
+  document.getElementById('py5_code').textContent = code;
+  document.getElementById('py5_csv').textContent = csvData;
+  document.getElementById('py5_parsed').innerHTML = parsed;
+  document.getElementById('py5_output').style.display = 'block';
+  document.getElementById('py5_concepts').style.display = 'block';
 }
 
 // Ask form
