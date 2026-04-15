@@ -777,22 +777,33 @@ Start-Process "report.csv"</code></pre>
       <div class="download-info">
         <div class="download-icon">⚡</div>
         <div>
-          <div class="download-name">PowerShell Starter Scripts</div>
-          <div class="download-desc">Ready-to-run .ps1 scripts — config, auth helper, report puller, CSV export.</div>
+          <div class="download-name">PowerShell Config Template</div>
+          <div class="download-desc">Fill-in-the-blanks config file — base URL, credentials, report IDs.</div>
         </div>
       </div>
-      <a href="downloads/ps-starter-scripts.zip" class="btn btn-download">⬇ Download</a>
+      <a href="downloads/UKG-Config.ps1" class="btn btn-download">⬇ Download</a>
     </div>
 
     <div class="download-item">
       <div class="download-info">
-        <div class="download-icon">📋</div>
+        <div class="download-icon">📊</div>
         <div>
-          <div class="download-name">API Quick Reference Card</div>
-          <div class="download-desc">One-page cheat sheet — endpoints, auth flow, common parameters. Print it out!</div>
+          <div class="download-name">PowerShell Report Puller</div>
+          <div class="download-desc">Ready-to-run script — authenticates, pulls a saved report, saves to CSV.</div>
         </div>
       </div>
-      <a href="downloads/api-quick-reference.pdf" class="btn btn-download">⬇ Download</a>
+      <a href="downloads/Get-UKGReport.ps1" class="btn btn-download">⬇ Download</a>
+    </div>
+
+    <div class="download-item">
+      <div class="download-info">
+        <div class="download-icon">🐍</div>
+        <div>
+          <div class="download-name">Python Starter Script</div>
+          <div class="download-desc">Complete Python script — .env config, OAuth2 auth, report pull, CSV parsing.</div>
+        </div>
+      </div>
+      <a href="#" class="btn btn-download" onclick="downloadPythonStarter();return false;">⬇ Download</a>
     </div>
   </div>
 
@@ -863,6 +874,76 @@ $data | Group-Object Department | ForEach-Object {
         Total      = ($_.Group | Measure-Object Amount -Sum).Sum
     }
 }</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Python Cheat Sheet</h3>
+      <pre><code><span class="code-comment"># Install dependencies</span>
+pip install requests python-dotenv
+
+<span class="code-comment"># GET request</span>
+response = requests.get(url, headers=headers)
+data = response.json()          <span class="code-comment"># for JSON</span>
+text = response.text            <span class="code-comment"># for CSV/text</span>
+
+<span class="code-comment"># POST with JSON body</span>
+response = requests.post(url, json={"key": "value"}, headers=headers)
+
+<span class="code-comment"># POST with form-encoded body (OAuth2!)</span>
+response = requests.post(url, data={"key": "value"})
+
+<span class="code-comment"># Parse CSV from string</span>
+import csv, io
+reader = csv.DictReader(io.StringIO(response.text))
+for row in reader:
+    print(row["first_name"], row["last_name"])
+
+<span class="code-comment"># Save to CSV file</span>
+with open("output.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+    writer.writeheader()
+    writer.writerows(rows)
+
+<span class="code-comment"># Read from .env</span>
+from dotenv import load_dotenv
+import os
+load_dotenv()
+api_key = os.getenv("UKG_API_KEY")
+
+<span class="code-comment"># f-strings (variables in text)</span>
+url = f"{base_url}/v1/report/saved/{report_id}"
+
+<span class="code-comment"># Error handling</span>
+if response.status_code == 200:
+    data = response.json()
+else:
+    print(f"Error {response.status_code}: {response.text}")
+
+<span class="code-comment"># Filter a list (like Where-Object)</span>
+active = [e for e in employees if e["status"] == "Active"]
+
+<span class="code-comment"># Sort a list (like Sort-Object)</span>
+by_name = sorted(employees, key=lambda e: e["last_name"])</code></pre>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Python vs PowerShell Quick Map</h3>
+      <pre><code><span class="code-comment"># Same concepts, different syntax:</span>
+
+<span class="code-comment">PowerShell                         Python</span>
+─────────────────────────────────  ─────────────────────────────
+Invoke-RestMethod -Uri $url        requests.get(url)
+$result.property                   result["property"]
+Import-Csv "file.csv"              csv.DictReader(open("file.csv"))
+Export-Csv -Path "out.csv"         csv.writer / .writerows()
+$data | Where-Object { ... }       [x for x in data if ...]
+$data | Select-Object Name         [{"Name": x["Name"]} for x in data]
+$data | Sort-Object Name           sorted(data, key=lambda x: x["Name"])
+ConvertTo-Json                     json.dumps()
+ConvertFrom-Json                   json.loads() / .json()
+$env:MY_VAR                        os.getenv("MY_VAR")
+Write-Host "text"                  print("text")
+"Hello $name"                      f"Hello {name}"</code></pre>
     </div>
 
     <div class="card">
@@ -1482,6 +1563,118 @@ function updateProgress() {
     const el = document.getElementById('ln' + n);
     if (el) el.style.background = 'var(--success)';
   });
+}
+
+// Python starter download
+function downloadPythonStarter() {
+  const content = `# ukg_report_puller.py
+# UKG Ready API - Complete Starter Script
+# Setup: pip install requests python-dotenv
+# Config: Create a .env file with your credentials (see below)
+
+import requests
+import csv
+import io
+import os
+from dotenv import load_dotenv
+
+# Load credentials from .env file
+load_dotenv()
+
+base_url      = os.getenv("UKG_BASE_URL", "https://secure2.saashr.com/ta/rest")
+company_id    = os.getenv("UKG_COMPANY_ID")     # numeric company ID for v2
+company       = os.getenv("UKG_COMPANY")         # company short name for v1
+api_key       = os.getenv("UKG_API_KEY")
+client_id     = os.getenv("UKG_CLIENT_ID")
+client_secret = os.getenv("UKG_CLIENT_SECRET")
+username      = os.getenv("UKG_USERNAME")
+password      = os.getenv("UKG_PASSWORD")
+report_id     = os.getenv("UKG_REPORT_ID", "")
+
+
+def authenticate_v1():
+    """v1 Token Authentication"""
+    response = requests.post(
+        f"{base_url}/v1/login",
+        headers={"Content-Type": "application/json", "Api-Key": api_key},
+        json={"credentials": {"username": username, "password": password, "company": company}}
+    )
+    response.raise_for_status()
+    token = response.json()["token"]
+    print(f"v1 Token: {token[:20]}...")
+    return token
+
+
+def authenticate_v2():
+    """v2 OAuth2 Client Credentials"""
+    response = requests.post(
+        f"{base_url}/v2/companies/{company_id}/oauth2/token",
+        data={"grant_type": "client_credentials", "client_id": client_id, "client_secret": client_secret},
+        headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+    response.raise_for_status()
+    token = response.json()["access_token"]
+    print(f"v2 Token: {token[:20]}...")
+    return token
+
+
+def pull_report(token, report_id):
+    """Pull a saved report as CSV"""
+    response = requests.get(
+        f"{base_url}/v1/report/saved/{report_id}",
+        headers={"Authentication": f"Bearer {token}", "Accept": "text/csv"}
+    )
+    response.raise_for_status()
+    rows = list(csv.DictReader(io.StringIO(response.text)))
+    print(f"Got {len(rows)} rows")
+    return rows
+
+
+def save_csv(rows, filename="output.csv"):
+    """Save rows to CSV file"""
+    if not rows:
+        print("No data to save")
+        return
+    with open(filename, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"Saved {len(rows)} rows to {filename}")
+
+
+if __name__ == "__main__":
+    # Authenticate (pick v1 or v2)
+    token = authenticate_v1()
+    # token = authenticate_v2()  # uncomment for v2
+
+    # Pull a report
+    if report_id:
+        rows = pull_report(token, report_id)
+        save_csv(rows)
+    else:
+        print("Set UKG_REPORT_ID in .env to pull a report")
+
+
+# --- .env TEMPLATE ---
+# Create a file called .env in the same folder:
+#
+# UKG_BASE_URL=https://secure2.saashr.com/ta/rest
+# UKG_COMPANY=YOURCOMPANY
+# UKG_COMPANY_ID=12345678
+# UKG_API_KEY=your-api-key
+# UKG_CLIENT_ID=your-client-id
+# UKG_CLIENT_SECRET=your-client-secret
+# UKG_USERNAME=reportuser
+# UKG_PASSWORD=YourPassword
+# UKG_REPORT_ID=43994775
+`;
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ukg_report_puller.py';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded ukg_report_puller.py! \ud83d\udc0d');
 }
 
 // Python Track

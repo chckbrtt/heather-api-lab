@@ -1,0 +1,87 @@
+{
+  "info": {
+    "name": "Heather's UKG Ready Collection",
+    "description": "Pre-built API requests for UKG Ready (SaaShr). Auth, saved reports, employee data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth - v1 Token Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Api-Key", "value": "{{api_key}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"credentials\": {\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\",\n    \"company\": \"{{company}}\"\n  }\n}"
+        },
+        "url": { "raw": "{{base_url}}/v1/login", "host": ["{{base_url}}"], "path": ["v1", "login"] }
+      }
+    },
+    {
+      "name": "2. Auth - v2 OAuth2 Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "grant_type", "value": "client_credentials" },
+            { "key": "client_id", "value": "{{client_id}}" },
+            { "key": "client_secret", "value": "{{client_secret}}" }
+          ]
+        },
+        "url": { "raw": "{{base_url}}/v2/companies/{{company_id}}/oauth2/token", "host": ["{{base_url}}"], "path": ["v2", "companies", "{{company_id}}", "oauth2", "token"] }
+      }
+    },
+    {
+      "name": "3. Pull Saved Report (CSV)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authentication", "value": "Bearer {{token}}" },
+          { "key": "Accept", "value": "text/csv" }
+        ],
+        "url": { "raw": "{{base_url}}/v1/report/saved/{{report_id}}", "host": ["{{base_url}}"], "path": ["v1", "report", "saved", "{{report_id}}"] }
+      }
+    },
+    {
+      "name": "4. Get Employees (v2)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/v2/companies/{{company_id}}/employees", "host": ["{{base_url}}"], "path": ["v2", "companies", "{{company_id}}", "employees"] }
+      }
+    },
+    {
+      "name": "5. Get Employee Detail (v2)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/v2/companies/{{company_id}}/employees/{{employee_id}}", "host": ["{{base_url}}"], "path": ["v2", "companies", "{{company_id}}", "employees", "{{employee_id}}"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "https://secure2.saashr.com/ta/rest" },
+    { "key": "api_key", "value": "" },
+    { "key": "username", "value": "" },
+    { "key": "password", "value": "" },
+    { "key": "company", "value": "" },
+    { "key": "company_id", "value": "" },
+    { "key": "client_id", "value": "" },
+    { "key": "client_secret", "value": "" },
+    { "key": "token", "value": "" },
+    { "key": "access_token", "value": "" },
+    { "key": "report_id", "value": "" },
+    { "key": "employee_id", "value": "" }
+  ]
+}
